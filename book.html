@@ -8,6 +8,50 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+
+/* LOADING POPUP */
+
+#loadingPopup{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.loadingBox{
+  background:white;
+  padding:30px 40px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+.spinner{
+  width:40px;
+  height:40px;
+  border:4px solid #ddd;
+  border-top:4px solid #005BAC;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:auto;
+}
+
+@keyframes spin{
+  0%{transform:rotate(0deg);}
+  100%{transform:rotate(360deg);}
+}
+
+.loadingBox p{
+  margin-top:12px;
+  font-weight:500;
+}
+
 *{
   box-sizing:border-box;
   font-family:'Poppins', sans-serif;
@@ -148,7 +192,14 @@ button:hover{
 
     <div class="input-group">
       <label>No HP *</label>
-      <input type="text" id="hp" placeholder="08xxxxxxxxxx">
+      <input 
+  type="tel"
+  id="hp"
+  placeholder="08xxxxxxxxxx"
+  inputmode="numeric"
+  pattern="[0-9]*"
+  maxlength="15"
+>
     </div>
 
     <div class="input-group">
@@ -173,19 +224,23 @@ button:hover{
 
     <div class="input-group full">
       <label>Ambil Foto</label>
-      <input type="file" id="foto" accept="image/*" capture="environment">
+      <input type="file" id="foto" accept="image/*" capture="user">
       <div class="preview" id="preview"></div>
     </div>
 
   </div>
 
-  <button onclick="submitData()">Kirim Data</button>
+  
+  <button id="btnKirim" onclick="submitData()">Kirim Data</button>
 
 </div>
 
-<script>
-const url = "https://script.google.com/macros/s/AKfycbwTknrEcn3h5P_pLn-Kzk4gV_9q0A-sTCrsPy7BuniT9o04hXqx4GkmtfhLgISBb3E/exec";
 
+
+<script>
+const url = "https://script.google.com/macros/s/AKfycbyaEFlcGqMWtiT1GhVxO2fVbq3tsZjAjG099Xwf-LrGiy4L7BAMLprSBhRK8Ipby_LA/exec";
+document.getElementById("btnKirim").innerText = "Mengirim...";
+document.getElementById("btnKirim").innerText = "Kirim Data";
 
 document.getElementById("foto").addEventListener("change", function(){
   const file = this.files[0];
@@ -200,6 +255,16 @@ document.getElementById("foto").addEventListener("change", function(){
     reader.readAsDataURL(file);
   }
 });
+
+function showLoading(){
+  document.getElementById("loadingPopup").style.display="flex";
+}
+
+function hideLoading(){
+  document.getElementById("loadingPopup").style.display="none";
+}
+
+
 
 function submitData(){
   const nama = document.getElementById("nama").value;
@@ -228,7 +293,10 @@ function submitData(){
 }
 
 function kirim(nama,hp,email,instansi,tujuan,bertemu,foto){
- fetch(url, {
+
+showLoading();
+
+fetch(url, {
   method: "POST",
   body: new URLSearchParams({
     data: JSON.stringify({
@@ -238,15 +306,42 @@ function kirim(nama,hp,email,instansi,tujuan,bertemu,foto){
 })
 .then(res => res.text())
 .then(response => {
+
+  hideLoading();
+
   if(response.includes("success")){
     alert("Data berhasil disimpan!");
-  } else {
+
+    document.getElementById("nama").value="";
+    document.getElementById("hp").value="";
+    document.getElementById("email").value="";
+    document.getElementById("instansi").value="";
+    document.getElementById("tujuan").value="";
+    document.getElementById("bertemu").value="";
+    document.getElementById("foto").value="";
+    document.getElementById("preview").innerHTML="";
+
+  }else{
     alert(response);
   }
+
 })
-.catch(err => alert("Koneksi gagal"));
+.catch(err=>{
+  hideLoading();
+  alert("Koneksi gagal");
+});
+
 }
 </script>
 
+<div id="loadingPopup">
+  <div class="loadingBox">
+    <div class="spinner"></div>
+    <p>Menyimpan data...</p>
+  </div>
+</div>
+
 </body>
+
+
 </html>
