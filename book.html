@@ -223,15 +223,17 @@ button:hover{
     </div>
 
     <div class="input-group full">
-      <label>Ambil Foto</label>
-     <input 
-      type="file"
-      id="foto"
-      accept="image/*"
-      capture="user"
->
-      <div class="preview" id="preview"></div>
-    </div>
+  <label>Ambil Foto</label>
+
+  <video id="camera" autoplay playsinline style="width:200px;border-radius:12px;"></video>
+  <br><br>
+
+  <button type="button" onclick="ambilFoto()">Ambil Foto</button>
+
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <div class="preview" id="preview"></div>
+</div>
 
   </div>
 
@@ -278,7 +280,7 @@ function submitData(){
   const instansi = document.getElementById("instansi").value;
   const tujuan = document.getElementById("tujuan").value;
   const bertemu = document.getElementById("bertemu").value;
-  const fotoInput = document.getElementById("foto");
+  const foto = fotoBase64;
 
   if(!nama || !hp || !email || !tujuan || !bertemu){
     alert("Mohon lengkapi semua data wajib (*)");
@@ -293,7 +295,7 @@ function submitData(){
       kirim(nama,hp,email,instansi,tujuan,bertemu,reader.result);
     }
   }else{
-    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
+    kirim(nama,hp,email,instansi,tujuan,bertemu,foto);
   }
 }
 
@@ -337,6 +339,42 @@ fetch(url, {
 });
 
 }
+
+function ambilFoto(){
+
+  const video = document.getElementById("camera");
+  const canvas = document.getElementById("canvas");
+  const preview = document.getElementById("preview");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video,0,0);
+
+  fotoBase64 = canvas.toDataURL("image/jpeg");
+
+  preview.innerHTML = `<img src="${fotoBase64}" style="max-width:150px;border-radius:12px;">`;
+}
+
+let stream;
+let fotoBase64 = "";
+
+async function startCamera(){
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" } // kamera depan
+    });
+
+    document.getElementById("camera").srcObject = stream;
+
+  }catch(err){
+    alert("Kamera tidak bisa diakses");
+  }
+}
+
+startCamera();
+
 </script>
 
 <div id="loadingPopup">
