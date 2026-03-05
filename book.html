@@ -11,6 +11,16 @@
 
 /* LOADING POPUP */
 
+.successIcon{
+  font-size:40px;
+  color:#28a745;
+}
+
+.successText{
+  font-weight:600;
+  color:#28a745;
+}
+
 #loadingPopup{
   position:fixed;
   top:0;
@@ -306,37 +316,51 @@ fetch(url, {
 .then(res => res.text())
 .then(response => {
 
-  hideLoading();
-
   if(response.includes("success")){
-    alert("Data berhasil disimpan!");
 
-    document.getElementById("nama").value="";
-    document.getElementById("hp").value="";
-    document.getElementById("email").value="";
-    document.getElementById("instansi").value="";
-    document.getElementById("tujuan").value="";
-    document.getElementById("bertemu").value="";
-    document.getElementById("foto").value="";
-    document.getElementById("preview").innerHTML="";
+    showSuccess();
+
+    setTimeout(()=>{
+
+      hideLoading();
+
+      document.getElementById("nama").value="";
+      document.getElementById("hp").value="";
+      document.getElementById("email").value="";
+      document.getElementById("instansi").value="";
+      document.getElementById("tujuan").value="";
+      document.getElementById("bertemu").value="";
+      document.getElementById("preview").innerHTML="";
+      document.getElementById("foto").value="";
+
+      document.getElementById("loadingSpinner").style.display="block";
+      document.getElementById("loadingText").innerText="Menyimpan data...";
+
+    },2000);
 
   }else{
+    hideLoading();
     alert(response);
   }
 
 })
-.catch(err=>{
-  hideLoading();
-  alert("Koneksi gagal");
-});
+
+}
+
+function showSuccess(){
+
+  document.getElementById("loadingSpinner").style.display="none";
+
+  document.getElementById("loadingText").innerHTML =
+  "<div class='successIcon'>✔</div><br><span class='successText'>Data berhasil disimpan</span>";
 
 }
 </script>
 
 <div id="loadingPopup">
   <div class="loadingBox">
-    <div class="spinner"></div>
-    <p>Menyimpan data...</p>
+    <div class="spinner" id="loadingSpinner"></div>
+    <p id="loadingText">Menyimpan data...</p>
   </div>
 </div>
 
