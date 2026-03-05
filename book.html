@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buku Tamu Digital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:'Poppins', sans-serif;
+}
+
+body{
+  margin:0;
+  background: linear-gradient(135deg, #005BAC, #00AEEF);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.card{
+  width:100%;
+  max-width:750px;
+  background:white;
+  padding:35px;
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.15);
+  animation:fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.header{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.header h2{
+  margin:0;
+  font-size:28px;
+  font-weight:700;
+  color:#333;
+}
+
+.header p{
+  margin:5px 0 0;
+  color:#777;
+  font-size:14px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.input-group{
+  display:flex;
+  flex-direction:column;
+}
+
+.input-group.full{
+  grid-column:1 / -1;
+}
+
+label{
+  font-weight:500;
+  font-size:14px;
+  color:#555;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:16px;
+  transition:0.3s;
+}
+
+input:focus{
+  border-color:#005BAC;
+  outline:none;
+  box-shadow:0 0 0 3px rgba(0,91,172,0.1);
+}
+
+.preview{
+  margin-top:10px;
+  text-align:center;
+}
+
+.preview img{
+  max-width:150px;
+  border-radius:12px;
+  margin-top:10px;
+}
+
+button{
+  width:100%;
+  padding:16px;
+  background:linear-gradient(135deg,#005BAC,#007BFF);
+  border:none;
+  color:white;
+  font-size:18px;
+  font-weight:600;
+  border-radius:14px;
+  cursor:pointer;
+  margin-top:20px;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Responsive tablet kecil / mobile */
+@media(max-width:700px){
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <div class="header">
+    <h2>Isi Data Tamu</h2>
+    <p>Silakan lengkapi data kunjungan Anda</p>
+  </div>
+
+  <div class="form-grid">
+
+    <div class="input-group">
+      <label>Nama Lengkap *</label>
+      <input type="text" id="nama" placeholder="Masukkan nama lengkap">
+    </div>
+
+    <div class="input-group">
+      <label>No HP *</label>
+      <input type="text" id="hp" placeholder="08xxxxxxxxxx">
+    </div>
+
+    <div class="input-group">
+      <label>Email *</label>
+      <input type="email" id="email" placeholder="contoh@email.com">
+    </div>
+
+    <div class="input-group">
+      <label>Instansi / Perusahaan</label>
+      <input type="text" id="instansi" placeholder="Nama instansi">
+    </div>
+
+    <div class="input-group">
+      <label>Tujuan Kunjungan *</label>
+      <input type="text" id="tujuan" placeholder="Contoh: Meeting, Audiensi, dll">
+    </div>
+
+    <div class="input-group">
+      <label>Bertemu Dengan *</label>
+      <input type="text" id="bertemu" placeholder="Nama yang ditemui">
+    </div>
+
+    <div class="input-group full">
+      <label>Ambil Foto</label>
+      <input type="file" id="foto" accept="image/*" capture="environment">
+      <div class="preview" id="preview"></div>
+    </div>
+
+  </div>
+
+  <button onclick="submitData()">Kirim Data</button>
+
+</div>
+
+<script>
+const url = "https://script.google.com/macros/s/AKfycbwTknrEcn3h5P_pLn-Kzk4gV_9q0A-sTCrsPy7BuniT9o04hXqx4GkmtfhLgISBb3E/exec";
+
+
+document.getElementById("foto").addEventListener("change", function(){
+  const file = this.files[0];
+  const preview = document.getElementById("preview");
+  preview.innerHTML = "";
+  
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      preview.innerHTML = `<img src="${e.target.result}">`;
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+function submitData(){
+  const nama = document.getElementById("nama").value;
+  const hp = document.getElementById("hp").value;
+  const email = document.getElementById("email").value;
+  const instansi = document.getElementById("instansi").value;
+  const tujuan = document.getElementById("tujuan").value;
+  const bertemu = document.getElementById("bertemu").value;
+  const fotoInput = document.getElementById("foto");
+
+  if(!nama || !hp || !email || !tujuan || !bertemu){
+    alert("Mohon lengkapi semua data wajib (*)");
+    return;
+  }
+
+  const reader = new FileReader();
+  
+  if(fotoInput.files.length > 0){
+    reader.readAsDataURL(fotoInput.files[0]);
+    reader.onload = function(){
+      kirim(nama,hp,email,instansi,tujuan,bertemu,reader.result);
+    }
+  }else{
+    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
+  }
+}
+
+function kirim(nama,hp,email,instansi,tujuan,bertemu,foto){
+ fetch(url, {
+  method: "POST",
+  body: new URLSearchParams({
+    data: JSON.stringify({
+      nama, hp, email, instansi, tujuan, bertemu, foto
+    })
+  })
+})
+.then(res => res.text())
+.then(response => {
+  if(response.includes("success")){
+    alert("Data berhasil disimpan!");
+  } else {
+    alert(response);
+  }
+})
+.catch(err => alert("Koneksi gagal"));
+}
+</script>
+
+</body>
+</html>
