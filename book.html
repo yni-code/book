@@ -193,12 +193,11 @@ button:hover{
     <div class="input-group">
       <label>No HP *</label>
       <input 
-  type="tel"
-  id="hp"
+  type="tel" 
+  id="hp" 
   placeholder="08xxxxxxxxxx"
   inputmode="numeric"
   pattern="[0-9]*"
-  maxlength="15"
 >
     </div>
 
@@ -222,20 +221,12 @@ button:hover{
       <input type="text" id="bertemu" placeholder="Nama yang ditemui">
     </div>
 
- <div class="input-group full">
-  <label>Ambil Foto</label>
+    <div class="input-group full">
+      <label>Ambil Foto</label>
+      <input type="file" id="foto" accept="image/*" capture="environment">
+      <div class="preview" id="preview"></div>
+    </div>
 
-  <video id="camera" autoplay playsinline style="width:200px;border-radius:12px;display:none;"></video>
-
-  <br>
-
-  <button type="button" onclick="startCamera()">Buka Kamera</button>
-  <button type="button" onclick="ambilFoto()">Ambil Foto</button>
-
-  <canvas id="canvas" style="display:none;"></canvas>
-
-  <div class="preview" id="preview"></div>
-</div>
   </div>
 
   
@@ -281,7 +272,7 @@ function submitData(){
   const instansi = document.getElementById("instansi").value;
   const tujuan = document.getElementById("tujuan").value;
   const bertemu = document.getElementById("bertemu").value;
-  const foto = fotoBase64;
+  const fotoInput = document.getElementById("foto");
 
   if(!nama || !hp || !email || !tujuan || !bertemu){
     alert("Mohon lengkapi semua data wajib (*)");
@@ -296,7 +287,7 @@ function submitData(){
       kirim(nama,hp,email,instansi,tujuan,bertemu,reader.result);
     }
   }else{
-    kirim(nama,hp,email,instansi,tujuan,bertemu,foto);
+    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
   }
 }
 
@@ -340,49 +331,6 @@ fetch(url, {
 });
 
 }
-
-function ambilFoto(){
-
-  const video = document.getElementById("camera");
-  const canvas = document.getElementById("canvas");
-  const preview = document.getElementById("preview");
-
-  if(!video.srcObject){
-    alert("Silakan buka kamera terlebih dahulu");
-    return;
-  }
-
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video,0,0);
-
-  fotoBase64 = canvas.toDataURL("image/jpeg");
-
-  preview.innerHTML = `<img src="${fotoBase64}" style="max-width:150px;border-radius:12px;">`;
-}
-
-let stream;
-let fotoBase64 = "";
-
-async function startCamera(){
-  try{
-
-    const video = document.getElementById("camera");
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" } // kamera depan
-    });
-
-    video.srcObject = stream;
-    video.style.display = "block";
-
-  }catch(err){
-    alert("Kamera tidak dapat diakses");
-  }
-}
-
 </script>
 
 <div id="loadingPopup">
