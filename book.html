@@ -222,19 +222,20 @@ button:hover{
       <input type="text" id="bertemu" placeholder="Nama yang ditemui">
     </div>
 
-    <div class="input-group full">
+ <div class="input-group full">
   <label>Ambil Foto</label>
 
-  <video id="camera" autoplay playsinline style="width:200px;border-radius:12px;"></video>
-  <br><br>
+  <video id="camera" autoplay playsinline style="width:200px;border-radius:12px;display:none;"></video>
 
+  <br>
+
+  <button type="button" onclick="startCamera()">Buka Kamera</button>
   <button type="button" onclick="ambilFoto()">Ambil Foto</button>
 
   <canvas id="canvas" style="display:none;"></canvas>
 
   <div class="preview" id="preview"></div>
 </div>
-
   </div>
 
   
@@ -346,6 +347,11 @@ function ambilFoto(){
   const canvas = document.getElementById("canvas");
   const preview = document.getElementById("preview");
 
+  if(!video.srcObject){
+    alert("Silakan buka kamera terlebih dahulu");
+    return;
+  }
+
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
@@ -362,18 +368,20 @@ let fotoBase64 = "";
 
 async function startCamera(){
   try{
+
+    const video = document.getElementById("camera");
+
     stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: "user" } // kamera depan
     });
 
-    document.getElementById("camera").srcObject = stream;
+    video.srcObject = stream;
+    video.style.display = "block";
 
   }catch(err){
-    alert("Kamera tidak bisa diakses");
+    alert("Kamera tidak dapat diakses");
   }
 }
-
-startCamera();
 
 </script>
 
