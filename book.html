@@ -334,16 +334,22 @@ function ambilFoto(){
   const canvas = document.getElementById("canvas");
   const preview = document.getElementById("preview");
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  if(video.readyState !== 4){
+    alert("Kamera belum siap, tunggu sebentar...");
+    return;
+  }
+
+  const width = video.videoWidth;
+  const height = video.videoHeight;
+
+  canvas.width = width;
+  canvas.height = height;
 
   const ctx = canvas.getContext("2d");
-  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  ctx.drawImage(video,0,0,width,height);
 
-  // SIMPAN FOTO BASE64
   fotoBase64 = canvas.toDataURL("image/jpeg",0.8);
 
-  // TAMPILKAN PREVIEW
   preview.innerHTML = `<img src="${fotoBase64}" style="max-width:150px;border-radius:12px;">`;
 
 }
@@ -372,10 +378,11 @@ function submitData(){
     return;
   }
 
-  // kirim foto dari kamera
   kirim(nama,hp,email,instansi,tujuan,bertemu,fotoBase64);
 
 }
+
+console.log(fotoBase64.substring(0,50));
 
 function kirim(nama,hp,email,instansi,tujuan,bertemu,foto){
 
