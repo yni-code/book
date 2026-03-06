@@ -176,11 +176,55 @@ button:hover{
   box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
+.headerBox{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:15px;
+}
+
+.headerLogo{
+  width:10px;
+  height:auto;
+}
+
+.headerText{
+  text-align:left;
+}
+
+.headerLogo{
+  width:50px;
+}
+
 /* Responsive tablet kecil / mobile */
 @media(max-width:700px){
   .form-grid{
     grid-template-columns:1fr;
   }
+}
+
+.cameraButton{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+
+  width:250px;        /* lebar tombol */
+  margin:10px auto;   /* auto kiri kanan = tengah */
+
+  padding:14px 20px;
+  background:linear-gradient(135deg,#005BAC,#007BFF);
+  color:white;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:500;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.cameraButton:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 15px rgba(0,0,0,0.2);
 }
 </style>
 </head>
@@ -188,10 +232,18 @@ button:hover{
 <body>
 
 <div class="card">
-  <div class="header">
-    <h2>Isi Data Tamu</h2>
-    <p>Silakan lengkapi data kunjungan Anda</p>
+ <div class="header">
+  <div class="headerBox">
+    
+    <img src="img/logo.png" class="headerLogo">
+
+    <div class="headerText">
+      <h2>SELAMAT DATANG</h2>
+      <p>Silakan lengkapi data kunjungan Anda</p>
+    </div>
+
   </div>
+</div>
 
   <div class="form-grid">
 
@@ -231,11 +283,19 @@ button:hover{
       <input type="text" id="bertemu" placeholder="Nama yang ditemui">
     </div>
 
-    <div class="input-group full">
-      <label>Ambil Foto</label>
-      <input type="file" id="foto" accept="image/*" capture="environment">
-      <div class="preview" id="preview"></div>
-    </div>
+    <input type="file" id="foto" accept="image/*" capture="environment" hidden>
+
+<div class="input-group full centerFoto">
+  
+
+  <input type="file" id="foto" accept="image/*" capture="environment" hidden>
+
+  <label for="foto" class="cameraButton">
+    📷 Ambil Foto
+  </label>
+
+  <div class="preview" id="preview"></div>
+</div>
 
   </div>
 
