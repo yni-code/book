@@ -365,21 +365,58 @@ function hideLoading(){
 
 
 function submitData(){
-
   const nama = document.getElementById("nama").value;
   const hp = document.getElementById("hp").value;
   const email = document.getElementById("email").value;
   const instansi = document.getElementById("instansi").value;
   const tujuan = document.getElementById("tujuan").value;
   const bertemu = document.getElementById("bertemu").value;
+  const fotoInput = document.getElementById("foto");
 
   if(!nama || !hp || !email || !tujuan || !bertemu){
     alert("Mohon lengkapi semua data wajib (*)");
     return;
   }
 
-  kirim(nama,hp,email,instansi,tujuan,bertemu,fotoBase64);
+  if(fotoInput.files.length > 0){
 
+    const file = fotoInput.files[0];
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+      img.src = e.target.result;
+    }
+
+    img.onload = function(){
+
+      const canvas = document.createElement("canvas");
+      const maxWidth = 800;
+
+      let width = img.width;
+      let height = img.height;
+
+      if(width > maxWidth){
+        height *= maxWidth / width;
+        width = maxWidth;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img,0,0,width,height);
+
+      const compressed = canvas.toDataURL("image/jpeg",0.7);
+
+      kirim(nama,hp,email,instansi,tujuan,bertemu,compressed);
+    }
+
+    reader.readAsDataURL(file);
+
+  }else{
+    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
+  }
 }
 
 console.log(fotoBase64.substring(0,50));
