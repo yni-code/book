@@ -307,6 +307,8 @@ button:hover{
 
 
 <script>
+let fotoBase64 = "";
+
 const url = "https://script.google.com/macros/s/AKfycbyaEFlcGqMWtiT1GhVxO2fVbq3tsZjAjG099Xwf-LrGiy4L7BAMLprSBhRK8Ipby_LA/exec";
 document.getElementById("btnKirim").innerText = "Mengirim...";
 document.getElementById("btnKirim").innerText = "Kirim Data";
@@ -336,12 +338,14 @@ function hideLoading(){
 
 
 function submitData(){
+
   const nama = document.getElementById("nama").value;
   const hp = document.getElementById("hp").value;
   const email = document.getElementById("email").value;
   const instansi = document.getElementById("instansi").value;
   const tujuan = document.getElementById("tujuan").value;
   const bertemu = document.getElementById("bertemu").value;
+
   const fotoInput = document.getElementById("foto");
 
   if(!nama || !hp || !email || !tujuan || !bertemu){
@@ -349,16 +353,31 @@ function submitData(){
     return;
   }
 
-  const reader = new FileReader();
-  
-  if(fotoInput.files.length > 0){
-    reader.readAsDataURL(fotoInput.files[0]);
+  // PRIORITAS FOTO DARI KAMERA
+  if(typeof fotoBase64 !== "undefined" && fotoBase64 !== ""){
+    
+    kirim(nama,hp,email,instansi,tujuan,bertemu,fotoBase64);
+
+  }
+  // JIKA FOTO DARI GALERI
+  else if(fotoInput.files.length > 0){
+
+    const reader = new FileReader();
+
     reader.onload = function(){
       kirim(nama,hp,email,instansi,tujuan,bertemu,reader.result);
     }
-  }else{
-    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
+
+    reader.readAsDataURL(fotoInput.files[0]);
+
   }
+  // JIKA TIDAK ADA FOTO
+  else{
+
+    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
+
+  }
+
 }
 
 function kirim(nama,hp,email,instansi,tujuan,bertemu,foto){
