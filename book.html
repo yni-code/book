@@ -307,6 +307,7 @@ button:hover{
 
 
 <script>
+let stream;
 let fotoBase64 = "";
 
 const url = "https://script.google.com/macros/s/AKfycbyaEFlcGqMWtiT1GhVxO2fVbq3tsZjAjG099Xwf-LrGiy4L7BAMLprSBhRK8Ipby_LA/exec";
@@ -327,6 +328,26 @@ document.getElementById("foto").addEventListener("change", function(){
   }
 });
 
+function ambilFoto(){
+
+  const video = document.getElementById("camera");
+  const canvas = document.getElementById("canvas");
+  const preview = document.getElementById("preview");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+
+  // SIMPAN FOTO BASE64
+  fotoBase64 = canvas.toDataURL("image/jpeg",0.8);
+
+  // TAMPILKAN PREVIEW
+  preview.innerHTML = `<img src="${fotoBase64}" style="max-width:150px;border-radius:12px;">`;
+
+}
+
 function showLoading(){
   document.getElementById("loadingPopup").style.display="flex";
 }
@@ -346,41 +367,21 @@ function submitData(){
   const tujuan = document.getElementById("tujuan").value;
   const bertemu = document.getElementById("bertemu").value;
 
-  const fotoInput = document.getElementById("foto");
-
   if(!nama || !hp || !email || !tujuan || !bertemu){
     alert("Mohon lengkapi semua data wajib (*)");
     return;
   }
 
-  // PRIORITAS FOTO DARI KAMERA
-  if(typeof fotoBase64 !== "undefined" && fotoBase64 !== ""){
-    
-    kirim(nama,hp,email,instansi,tujuan,bertemu,fotoBase64);
-
-  }
-  // JIKA FOTO DARI GALERI
-  else if(fotoInput.files.length > 0){
-
-    const reader = new FileReader();
-
-    reader.onload = function(){
-      kirim(nama,hp,email,instansi,tujuan,bertemu,reader.result);
-    }
-
-    reader.readAsDataURL(fotoInput.files[0]);
-
-  }
-  // JIKA TIDAK ADA FOTO
-  else{
-
-    kirim(nama,hp,email,instansi,tujuan,bertemu,"");
-
-  }
+  // kirim foto dari kamera
+  kirim(nama,hp,email,instansi,tujuan,bertemu,fotoBase64);
 
 }
 
 function kirim(nama,hp,email,instansi,tujuan,bertemu,foto){
+
+if(!foto){
+  foto = "";
+}
 
 showLoading();
 
@@ -400,7 +401,6 @@ fetch(url, {
     showSuccess();
 
     setTimeout(()=>{
-
       hideLoading();
 
       document.getElementById("nama").value="";
@@ -410,10 +410,8 @@ fetch(url, {
       document.getElementById("tujuan").value="";
       document.getElementById("bertemu").value="";
       document.getElementById("preview").innerHTML="";
-      document.getElementById("foto").value="";
 
-      document.getElementById("loadingSpinner").style.display="block";
-      document.getElementById("loadingText").innerText="Menyimpan data...";
+      fotoBase64 = "";
 
     },2000);
 
@@ -423,6 +421,10 @@ fetch(url, {
   }
 
 })
+.catch(()=>{
+  hideLoading();
+  alert("Koneksi gagal");
+});
 
 }
 
