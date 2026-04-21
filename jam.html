@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TIME</title>
+  <style>
+    :root {
+      --bg-1: #03080f;
+      --bg-2: #0f1c2c;
+      --panel: rgba(19, 25, 33, 0.82);
+      --off: rgba(108, 46, 46, 0.08);
+      --on: #cf1d1d;
+      --glow: rgba(53, 1, 1, 0.7);
+      --digit-width: 76px;
+      --digit-height: 136px;
+      --segment-thickness: 12px;
+      --segment-gap: 8px;
+      --colon-size: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #000000;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .brand {
+      width: min(100%, 340px);
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .clock-card {
+      position: relative;
+      width: fit-content;
+      max-width: 100%;
+      padding: 26px;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--panel);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(12px);
+    }
+
+    .clock {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .digit {
+      position: relative;
+      width: var(--digit-width);
+      height: var(--digit-height);
+    }
+
+    .segment {
+      position: absolute;
+      background: var(--off);
+      filter: drop-shadow(0 0 0 transparent);
+      transition: background 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+
+    .segment.on {
+      background: var(--on);
+      box-shadow: 0 0 12px var(--glow), 0 0 22px rgba(118, 255, 214, 0.35);
+      filter: drop-shadow(0 0 6px var(--glow));
+    }
+
+    .segment.a,
+    .segment.d,
+    .segment.g {
+      width: calc(var(--digit-width) - 24px);
+      height: var(--segment-thickness);
+      left: 12px;
+      clip-path: polygon(8% 0, 92% 0, 100% 50%, 92% 100%, 8% 100%, 0 50%);
+    }
+
+    .segment.a {
+      top: 0;
+    }
+
+    .segment.g {
+      top: calc(50% - (var(--segment-thickness) / 2));
+    }
+
+    .segment.d {
+      bottom: 0;
+    }
+
+    .segment.b,
+    .segment.c,
+    .segment.e,
+    .segment.f {
+      width: var(--segment-thickness);
+      height: calc(50% - 10px);
+      clip-path: polygon(50% 0, 100% 8%, 100% 92%, 50% 100%, 0 92%, 0 8%);
+    }
+
+    .segment.b {
+      top: 8px;
+      right: 0;
+    }
+
+    .segment.c {
+      bottom: 8px;
+      right: 0;
+    }
+
+    .segment.e {
+      bottom: 8px;
+      left: 0;
+    }
+
+    .segment.f {
+      top: 8px;
+      left: 0;
+    }
+
+    .colon {
+      display: grid;
+      gap: 24px;
+      padding: 0 4px;
+    }
+
+    .colon span {
+      width: var(--colon-size);
+      height: var(--colon-size);
+      border-radius: 50%;
+      background: var(--on);
+      box-shadow: 0 0 12px var(--glow), 0 0 22px rgba(118, 255, 214, 0.35);
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        --digit-width: 52px;
+        --digit-height: 96px;
+        --segment-thickness: 9px;
+        --colon-size: 10px;
+      }
+
+      .clock-card {
+        width: fit-content;
+        max-width: 100%;
+        padding: 18px;
+        border-radius: 22px;
+      }
+
+      .page {
+        gap: 18px;
+      }
+
+      .brand {
+        width: min(100%, 260px);
+      }
+
+      .clock {
+        gap: 6px;
+      }
+
+      .colon {
+        gap: 18px;
+        padding: 0 2px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      :root {
+        --digit-width: 38px;
+        --digit-height: 72px;
+        --segment-thickness: 7px;
+        --colon-size: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <img class="brand" src="img/ILEAGUE.png" alt="ILEAGUE">
+
+    <main class="clock-card">
+      <div class="clock" id="clock">
+        <div class="digit" data-digit="0"></div>
+        <div class="digit" data-digit="0"></div>
+        <div class="colon" aria-hidden="true"><span></span><span></span></div>
+        <div class="digit" data-digit="0"></div>
+        <div class="digit" data-digit="0"></div>
+        <div class="colon" aria-hidden="true"><span></span><span></span></div>
+        <div class="digit" data-digit="0"></div>
+        <div class="digit" data-digit="0"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const digitMap = {
+      "0": ["a", "b", "c", "d", "e", "f"],
+      "1": ["b", "c"],
+      "2": ["a", "b", "d", "e", "g"],
+      "3": ["a", "b", "c", "d", "g"],
+      "4": ["b", "c", "f", "g"],
+      "5": ["a", "c", "d", "f", "g"],
+      "6": ["a", "c", "d", "e", "f", "g"],
+      "7": ["a", "b", "c"],
+      "8": ["a", "b", "c", "d", "e", "f", "g"],
+      "9": ["a", "b", "c", "d", "f", "g"]
+    };
+
+    const digits = document.querySelectorAll(".digit");
+    const segments = ["a", "b", "c", "d", "e", "f", "g"];
+
+    digits.forEach((digit) => {
+      segments.forEach((segmentName) => {
+        const segment = document.createElement("span");
+        segment.className = `segment ${segmentName}`;
+        digit.appendChild(segment);
+      });
+    });
+
+    function renderDigit(container, value) {
+      const activeSegments = digitMap[value] || [];
+
+      container.querySelectorAll(".segment").forEach((segment) => {
+        const segmentName = [...segment.classList].find((name) => segments.includes(name));
+        segment.classList.toggle("on", activeSegments.includes(segmentName));
+      });
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }).replace(/\./g, ":");
+
+      const chars = time.replace(/:/g, "").split("");
+      digits.forEach((digit, index) => renderDigit(digit, chars[index]));
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
